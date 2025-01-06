@@ -1,48 +1,28 @@
-let cart = [];
-
-function addToCart(id, name, price) {
-  const product = { id, name, price };
-  cart.push(product);
-  updateCart();
-}
-
-function updateCart() {
-  const cartButton = document.getElementById('cart-button');
-  const cartItemsContainer = document.getElementById('cart-items');
-  const cartTotal = document.getElementById('cart-total');
-
-  // Update cart button
-  cartButton.textContent = `Cart (${cart.length})`;
-
-  // Update cart items list
-  cartItemsContainer.innerHTML = '';
-  let total = 0;
-  cart.forEach(item => {
-    const li = document.createElement('li');
-    li.textContent = `${item.name} - $${item.price.toFixed(2)}`;
-    cartItemsContainer.appendChild(li);
-    total += item.price;
+document.addEventListener('DOMContentLoaded', function() {
+    // Fetch products from the server and display them
+    fetchProducts();
   });
+  
+  function fetchProducts() {
+    fetch('/php/product/fetch_products.php')
+      .then(response => response.json())
+      .then(data => {
+        const productsContainer = document.getElementById('products-container');
+        data.forEach(product => {
+          const productCard = document.createElement('div');
+          productCard.classList.add('product-card');
+          productCard.innerHTML = `
+            <img src="${product.image_url}" alt="${product.name}">
+            <h2>${product.name}</h2>
+            <p>${product.description}</p>
+            <p><strong>$${product.price}</strong></p>
+            <button>Add to Cart</button>
+          `;
+          productsContainer.appendChild(productCard);
+        });
+      })
+      .catch(error => console.error('Error fetching products:', error));
+  }
 
-  // Update total price
-  cartTotal.textContent = total.toFixed(2);
-}
-
-function toggleCart() {
-  const cartModal = document.getElementById('cart-modal');
-  cartModal.style.display = cartModal.style.display === 'flex' ? 'none' : 'flex';
-}
-
-function closeCart() {
-  const cartModal = document.getElementById('cart-modal');
-  cartModal.style.display = 'none';
-}
-
-function checkout() {
-  alert('Proceeding to checkout');
-  cart = []; // Clear the cart after checkout
-  updateCart();
-  closeCart();
-}
 
   
